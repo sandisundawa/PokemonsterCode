@@ -30,6 +30,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import id.codeid.pokemon.data.local.AppDatabase
+import id.codeid.pokemon.data.local.SessionManager
 import id.codeid.pokemon.presentation.home.HomeActivity
 import id.codeid.pokemon.ui.theme.PokemonsterCodeTheme
 import kotlinx.coroutines.launch
@@ -90,6 +91,11 @@ fun LoginScreen(context: Context) {
                         scope.launch {
                             val user = db.userDao().login(username, password)
                             if (user != null) {
+                                val sessionManager = SessionManager(context)
+                                sessionManager.saveUserSession(
+                                    name = user.username,
+                                    address = user.address
+                                )
                                 Toast.makeText(context, "Login berhasil!", Toast.LENGTH_SHORT)
                                     .show()
                                 val intent = Intent(context, HomeActivity::class.java)
