@@ -1,6 +1,7 @@
 package id.codeid.pokemon.data.repository
 
 import id.codeid.pokemon.data.remote.PokeApi
+import id.codeid.pokemon.data.remote.model.PokemonDetailResponse
 import id.codeid.pokemon.domain.model.Pokemon
 import id.codeid.pokemon.domain.repository.PokeRepository
 import kotlinx.coroutines.Dispatchers
@@ -27,5 +28,12 @@ class PokeRepositoryImpl(private val api: PokeApi) : PokeRepository {
             }
         }
     }
+
+    override suspend fun fetchPokemonDetail(name: String): PokemonDetailResponse {
+        return withContext(Dispatchers.IO) {
+            api.getDetailPokemon(name)
+        }
+    }
+
 
 }

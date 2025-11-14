@@ -34,6 +34,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import id.codeid.pokemon.data.remote.ApiClient
 import id.codeid.pokemon.data.repository.PokeRepositoryImpl
 import id.codeid.pokemon.domain.usecase.GetPokemonListUseCase
+import id.codeid.pokemon.presentation.detailscreen.DetailScreenActivity
 import kotlinx.coroutines.flow.collect
 
 
@@ -85,7 +86,8 @@ fun HomeTab(modifier: Modifier = Modifier) {
                 {
 
                     TextButton(onClick = {
-                        val intent = Intent(context, HomeActivity::class.java)
+                        val intent = Intent(context, DetailScreenActivity::class.java)
+                        intent.putExtra("pokemonName", item.name)
                         context.startActivity(intent)
                     }) {
 

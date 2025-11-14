@@ -18,6 +18,10 @@
         <activity
             android:name=".presentation.home.HomeActivity"
             android:exported="false" />
+
+        <activity
+            android:name=".presentation.detailscreen.DetailScreenActivity"
+            android:exported="false" />
         <activity
             android:name=".presentation.registration.RegistrationActivity"
             android:exported="true">
