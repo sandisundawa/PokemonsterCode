@@ -29,6 +29,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import id.codeid.pokemon.data.local.AppDatabase
 import id.codeid.pokemon.data.local.SessionManager
 import id.codeid.pokemon.data.remote.ApiClient
 import id.codeid.pokemon.data.repository.PokeRepositoryImpl
@@ -59,7 +60,9 @@ fun DetailScreen(modifier: Modifier = Modifier, pokemonName: String? = null) {
 
     val viewModel = remember {
         val api = ApiClient.pokeApi
-        val repository = PokeRepositoryImpl(api)
+        val db = AppDatabase.getDatabase(context)
+        val dao = db.pokemonDao()
+        val repository = PokeRepositoryImpl(api, dao)
         val getPokemonDetailUseCase = GetPokemonDetailUseCase(repository)
         DetailScreenViewModel(getPokemonDetailUseCase)
     }

@@ -31,6 +31,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import id.codeid.pokemon.data.local.AppDatabase
+import id.codeid.pokemon.data.local.PokemonDao
 import id.codeid.pokemon.data.remote.ApiClient
 import id.codeid.pokemon.data.repository.PokeRepositoryImpl
 import id.codeid.pokemon.domain.usecase.GetPokemonListUseCase
@@ -44,8 +46,10 @@ fun HomeTab(modifier: Modifier = Modifier) {
     val context = LocalContext.current
     val viewModel = remember {
         val api = ApiClient.pokeApi
-        val repo = PokeRepositoryImpl(api)
-        val useCase = GetPokemonListUseCase(repo)
+        val db = AppDatabase.getDatabase(context)
+        val dao = db.pokemonDao()
+        val repository = PokeRepositoryImpl(api, dao)
+        val useCase = GetPokemonListUseCase(repository)
 
         HomeViewModel(useCase)
     }
