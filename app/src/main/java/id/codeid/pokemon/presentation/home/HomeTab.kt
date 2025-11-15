@@ -24,6 +24,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
@@ -36,6 +37,7 @@ import id.codeid.pokemon.data.local.PokemonDao
 import id.codeid.pokemon.data.remote.ApiClient
 import id.codeid.pokemon.data.repository.PokeRepositoryImpl
 import id.codeid.pokemon.domain.usecase.GetPokemonListUseCase
+import id.codeid.pokemon.domain.usecase.SearchPokemonUseCase
 import id.codeid.pokemon.presentation.detailscreen.DetailScreenActivity
 import kotlinx.coroutines.flow.collect
 
@@ -50,12 +52,14 @@ fun HomeTab(modifier: Modifier = Modifier) {
         val dao = db.pokemonDao()
         val repository = PokeRepositoryImpl(api, dao)
         val useCase = GetPokemonListUseCase(repository)
+        val useCaseSearch = SearchPokemonUseCase(repository)
 
-        HomeViewModel(useCase)
+        HomeViewModel(useCase, useCaseSearch)
     }
 
     val pokemonList by viewModel.pokemonList.collectAsState()
     val listState = rememberLazyListState()
+    var querySearch by remember { mutableStateOf("") }
 
     LaunchedEffect(Unit) {
         snapshotFlow {
@@ -71,10 +75,26 @@ fun HomeTab(modifier: Modifier = Modifier) {
     Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
 
         Text(
-            modifier = Modifier.fillMaxWidth().padding(0.dp, 36.dp, 16.dp, 0.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(0.dp, 36.dp, 16.dp, 0.dp),
             text = "List Pokemon",
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.headlineMedium,
+        )
+
+
+        TextField(
+            value = querySearch,
+            onValueChange = {
+                querySearch = it
+                viewModel.searchPokemon(it)
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            placeholder = { Text("Cari Pokemon..") },
+            singleLine = true,
         )
 
         LazyColumn(state = listState) {
@@ -82,7 +102,7 @@ fun HomeTab(modifier: Modifier = Modifier) {
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp),
+                        .padding(16.dp, 6.dp),
                     shape = RoundedCornerShape(8.dp),
                     colors = CardDefaults.cardColors(containerColor = Color.White),
                     elevation = CardDefaults.cardElevation(8.dp)
@@ -108,7 +128,6 @@ fun HomeTab(modifier: Modifier = Modifier) {
                         }
                     }
                 }
-
             }
         }
     }

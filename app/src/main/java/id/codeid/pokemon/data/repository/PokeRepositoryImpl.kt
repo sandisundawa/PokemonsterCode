@@ -50,5 +50,7 @@ class PokeRepositoryImpl(private val api: PokeApi, private val dao: PokemonDao) 
         return remote
     }
 
+    override suspend fun searchPokemonLocal(query: String): List<PokemonEntity> =
+        dao.searchByName("%$query%")
 
 }

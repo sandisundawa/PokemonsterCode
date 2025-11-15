@@ -19,4 +19,7 @@ interface PokemonDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(detail: PokemonDetailEntity)
+
+    @Query("SELECT * FROM pokemon WHERE name LIKE :query")
+    suspend fun searchByName(query: String): List<PokemonEntity>
 }
