@@ -1,6 +1,8 @@
 package id.codeid.pokemon.data.repository
 
+import com.google.gson.Gson
 import id.codeid.pokemon.data.local.PokemonDao
+import id.codeid.pokemon.data.local.PokemonDetailEntity
 import id.codeid.pokemon.data.local.PokemonEntity
 import id.codeid.pokemon.data.remote.PokeApi
 import id.codeid.pokemon.data.remote.model.PokemonDetailResponse
@@ -24,6 +26,8 @@ class PokeRepositoryImpl(private val api: PokeApi, private val dao: PokemonDao) 
 
         val entities = resp.results.mapNotNull { dto ->
             val id = dto.url.trimEnd('/').split("/").lastOrNull()?.toIntOrNull()
+            // ambil id nya dari path terakhir dari url
+            // bismillah gak ada yg sama
             id?.let { PokemonEntity(id = id, name = dto.name) }
         }
 
@@ -33,9 +37,17 @@ class PokeRepositoryImpl(private val api: PokeApi, private val dao: PokemonDao) 
     }
 
     override suspend fun fetchPokemonDetail(name: String): PokemonDetailResponse {
-        return withContext(Dispatchers.IO) {
-            api.getDetailPokemon(name)
+        val gson = Gson()
+        val local = dao.getDetail(name)
+        if (local != null) {
+            return gson.fromJson(local.json, PokemonDetailResponse::class.java)
         }
+        val remote = api.getDetailPokemon(name)
+
+        val json = gson.toJson(remote)
+        dao.insert(PokemonDetailEntity(name = name, json = json))
+
+        return remote
     }
 
 

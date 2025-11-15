@@ -13,4 +13,10 @@ interface PokemonDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(pokemon: List<PokemonEntity>)
+
+    @Query("SELECT * FROM pokemon_detail WHERE name = :name LIMIT 1")
+    suspend fun getDetail(name: String): PokemonDetailEntity?
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(detail: PokemonDetailEntity)
 }
